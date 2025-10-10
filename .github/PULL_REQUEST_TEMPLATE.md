@@ -1,14 +1,14 @@
 # 📌 Entrega de Trabajo Práctico
 
 ## 🧑‍🎓 Datos del Alumno
-- **Apellido y Nombre:**  
-- **Legajo:**  
-- **Comisión / Curso (si aplica):**  
+- **Apellido y Nombre: Zottola Lucas Mateo
+- **Legajo: 61746
+- **Comisión / Curso (si aplica): 2  
 
 ## 📘 Información del Trabajo
-- **Número de TP:**  
-- **Título del TP:**  
-- **Rama utilizada:**  
+- **Número de TP: Trabajo Práctico N°1
+- **Título del TP: Gestión Comercial
+- **Rama utilizada: ZottolaLucasMateo_48328_Legajo
 
 ## ✅ Checklist antes de enviar el PR
 - [ ] La carpeta tiene mi **ApellidoNombre_Legajo** como nombre.  
