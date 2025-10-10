@@ -1,0 +1,23 @@
+{
+  "name": "tp_comison_2_tup",
+  "version": "1.0.0",
+  "description": "📘 Trabajos Prácticos – Programación Back-End con Node.js y MySQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lucas-GitHubb/TP_Comison_2_TUP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lucas-GitHubb/TP_Comison_2_TUP/issues"
+  },
+  "homepage": "https://github.com/Lucas-GitHubb/TP_Comison_2_TUP#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
