@@ -13,13 +13,13 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 
 
-
-app.use('/api/migration/', migrationRoutes);
-app.use('/api/donadores/', donadoresRoutes);
-app.use('/api/comedores/', comedoresRoutes);
-app.use("/api/productos/", productosRoutes);
-app.use("/api/entregas/", entregasRoutes);
-app.use('/api/usuarios/', usuariosRoutes);
+// se corrigen rutas, ya que tenian doble barra
+app.use('/api/migration', migrationRoutes);
+app.use('/api/donadores', donadoresRoutes);
+app.use('/api/comedores', comedoresRoutes);
+app.use("/api/productos", productosRoutes);
+app.use("/api/entregas", entregasRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 
 
 app.listen(PORT, () => {
