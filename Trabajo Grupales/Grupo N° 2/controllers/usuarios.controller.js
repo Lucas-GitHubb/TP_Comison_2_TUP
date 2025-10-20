@@ -1,5 +1,8 @@
 import db from "../config/db.js";
 import bcrypt from "bcryptjs";
+import enviarEmailDeBievenida from "../utils/servicioDeEmail.js";
+
+
 export const crearUsuario = async (req, res) => {
   try {
     const { correoUsuario, contraseñaUsuario } = req.body;
@@ -11,6 +14,8 @@ export const crearUsuario = async (req, res) => {
     const query =
       'INSERT INTO usuarios (correoUsuario, contraseñaUsuario) VALUES (?, ?)';
     const [result] = await db.query(query, [correoUsuario, hasheadContraseña]);
+
+    await enviarEmailDeBievenida(correoUsuario);
     res.status(201).json({
       message: "Usuario creado exitosamente",
       userId: result.insertId,

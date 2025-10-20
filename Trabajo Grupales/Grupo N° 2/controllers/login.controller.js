@@ -1,5 +1,9 @@
 import db from "../config/db.js";
 import bcrypt from "bcryptjs";
+import jsonwebtoken from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const loginUser = async (req, res) => {
   try {
@@ -31,8 +35,23 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
-    // 4. Si todo es correcto, devolver éxito
-    res.status(200).json({ message: "Login exitoso" });
+    // 4. Si todo es correcto, devolvemos el mensaje ed exito junto con el token JWT
+
+    const token = jsonwebtoken.sign(
+      { idUsuario: user.idUsuario, correoUsuario: user.correoUsuario },
+      process.env.SECRET_JWT,
+      { expiresIn: "1h" }
+    );
+
+    // user.token = token;
+    // delete user.contraseñaUsuario; // Eliminar la contraseña del objeto user antes de enviarlo
+    const payload = {
+      idUsuario: user.idUsuario,
+      correoUsuario: user.correoUsuario,
+      token: token,
+    };
+
+    res.status(200).json({ message: "Login exitoso", user: payload });
   } catch (error) {
     console.error("Error en loginUser:", error);
     res.status(500).json({ error: "Error en el proceso de login" });
