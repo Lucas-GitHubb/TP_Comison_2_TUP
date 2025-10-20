@@ -4,6 +4,7 @@ import migrationRoutes from './routes/migration.route.js';
 import donadoresRoutes from './routes/donadores.route.js';
 import productosRoutes from './routes/productos.route.js';
 import entregasRoutes from './routes/entregas.route.js';
+import usuariosRoutes from './routes/usuarios.routes.js';
 
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/api/donadores/', donadoresRoutes);
 app.use('/api/comedores/', comedoresRoutes);
 app.use("/api/productos/", productosRoutes);
 app.use("/api/entregas/", entregasRoutes);
+app.use('/api/usuarios/', usuariosRoutes);
 
 
 app.listen(PORT, () => {
