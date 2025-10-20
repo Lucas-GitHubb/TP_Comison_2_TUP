@@ -1,15 +1,15 @@
 import db from "../config/db.js";
-
+import bcrypt from "bcryptjs";
 export const crearUsuario = async (req, res) => {
   try {
     const { correoUsuario, contraseñaUsuario } = req.body;
-
+    console.log(contraseñaUsuario, correoUsuario);
     // hashear la contraseña
     const saltRounds = 10;
     const hasheadContraseña = await bcrypt.hash(contraseñaUsuario, saltRounds);
 
     const query =
-      "INSERT INTO usuarios (correoUsuario, contraseñaUsuario) VALUES (?, ?)";
+      'INSERT INTO usuarios (correoUsuario, contraseñaUsuario) VALUES (?, ?)';
     const [result] = await db.query(query, [correoUsuario, hasheadContraseña]);
     res.status(201).json({
       message: "Usuario creado exitosamente",
