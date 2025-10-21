@@ -1,6 +1,6 @@
 require("dotenv").config()
 const express = require('express');
-const { conection } = require('./config/database');
+const { conection } = require('./src/config/database');
 const routesSocios = require("./routes/socios.routes")
 const routesActivades = require("./routes/actividades.routes")
 const routesReservas = require("./routes/routes.reservas")
