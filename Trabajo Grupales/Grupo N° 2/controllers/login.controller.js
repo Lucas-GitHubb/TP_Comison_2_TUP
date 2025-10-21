@@ -1,6 +1,6 @@
 import db from "../config/db.js";
-import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
+import { comparePassword } from "../utils/hashPassword.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -26,7 +26,7 @@ export const loginUser = async (req, res) => {
     const user = results[0];
 
     // 3. Comparar la contraseña proporcionada con la almacenada
-    const compararContraseña = bcrypt.compareSync(
+    const compararContraseña = await comparePassword(
       contraseñaUsuario,
       user.contraseñaUsuario
     );
