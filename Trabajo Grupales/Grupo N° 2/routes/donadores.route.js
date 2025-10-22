@@ -10,14 +10,15 @@ import {
   validarCrearDonador,
   validarActualizarDonador,
 } from '../validations/donadores.validation.js';
+import { validarId } from '../validations/common.validation.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 
 const route = Router();
 
 route.get('/', getDonadores);
-route.get('/:id', getOneDonador);
+route.get('/:id', validarId, validateRequest, getOneDonador); 
 route.post('/', validarCrearDonador, validateRequest, postDonadores);
-route.put('/:id', validarActualizarDonador, validateRequest, putDonadores);
-route.delete('/:id', deleteDonadores);
+route.put('/:id', validarId, validarActualizarDonador, validateRequest, putDonadores); 
+route.delete('/:id', validarId, validateRequest, deleteDonadores); 
 
 export default route;
