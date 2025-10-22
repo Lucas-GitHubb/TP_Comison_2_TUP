@@ -2,16 +2,15 @@ import poolMigration from '../config/connectionMigration.js';
 import pool from '../config/db.js';
 
 export const createDatabase = async (req, res) => {
-  try{
+  try {
     const dbName = process.env.MYSQL_DATABASE;
-    await poolMigration.query(`DROP DATABASE IF EXISTS ${dbName}`)
-    await poolMigration.query(`CREATE DATABASE ${dbName}`)
-    res.json({status: 200, payload: 'Database creada'})
+    await poolMigration.query(`DROP DATABASE IF EXISTS ${dbName}`);
+    await poolMigration.query(`CREATE DATABASE ${dbName}`);
+    res.json({ status: 200, payload: 'Database creada' });
+  } catch (error) {
+    console.log(error);
   }
-  catch(error){
-    console.log(error)
-  }
-}
+};
 
 export const createTables = async (req, res) => {
   try {
@@ -63,16 +62,15 @@ export const createTables = async (req, res) => {
       );
       
       `);
-    res.json({status: 200, payload: 'Tablas creadas'});
+    res.json({ status: 200, payload: 'Tablas creadas' });
   } catch (error) {
     console.log(error);
-    res.status(400).json({status: 400, payload: 'Error al crear las tablas'});
+    res.status(400).json({ status: 400, payload: 'Error al crear las tablas' });
   }
-}
+};
 
 export const createData = async (req, res) => {
   try {
-
     await pool.query(`
       INSERT INTO donadores (nombre, apellido, contacto) VALUES
         ('Juan', 'Pérez', '3815123456'),
@@ -133,10 +131,12 @@ export const createData = async (req, res) => {
         (4, 18,  2, 10, '2025-09-26 11:35:00', 'Queso cremoso'),
         (5,  4,  3,  7, '2025-10-03 16:20:00', 'Pescado fresco');   
         `);
-    
-    res.json({status: 200, payload: 'Datos insertados'});
+
+    res.json({ status: 200, payload: 'Datos insertados' });
   } catch (error) {
     console.log(error);
-    res.status(400).json({status: 400, payload: error.sqlMessage || 'Error al insertar los datos'});
+    res
+      .status(400)
+      .json({ status: 400, payload: error.sqlMessage || 'Error al insertar los datos' });
   }
-}
+};
