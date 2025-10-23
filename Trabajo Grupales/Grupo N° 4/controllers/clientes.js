@@ -1,4 +1,4 @@
-const { pool } = require('../config/dataBase.js');
+const { pool } = require('../config/dataBase.js')
 
 const getClientes = async (req, res) => {
   try {
