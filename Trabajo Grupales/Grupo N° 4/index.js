@@ -3,9 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const serviciosRoutes = require('./routes/serviciosRoute.js');
-const clientesRoutes = require('./routes/clientes.js');
-const turnosRoutes = require('./routes/turnosRoutes.js');
+const serviciosRoutes = require('./routes/servicios.routes.js');
+const clientesRoutes = require('./routes/clientes.routes.js');
+const turnosRoutes = require('./routes/turnos.routes.js');
 
 dotenv.config();
 const app = express();
