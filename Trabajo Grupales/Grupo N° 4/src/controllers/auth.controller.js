@@ -4,7 +4,7 @@
 import { hashPassword, comparePassword } from '../utils/hash.utils.js';
 import { generateAccessToken } from '../utils/jwt.utils.js';
 import { query } from '../config/dataBase.js';
-import { sendEmail } from '../services/email.service.js';
+import { sendEmail } from '../service/email.service.js';
 import jwt from 'jsonwebtoken'; 
 
 
@@ -87,36 +87,41 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
-    
-    const { token, newPassword } = req.body;
-    if (!token || !newPassword) return res.status(400).json({ message: 'Faltan campos.' });
-    try {
-        // 1. Verificar el JWT
-        const decoded = jwt.verify(token, RESET_TOKEN_SECRET);
-        const userId = decoded.id;
+  const { token, newPassword } = req.body;
+  if (!token || !newPassword) return res.status(400).json({ message: 'Faltan campos.' });
 
-        // 2. Validar que el token existe en la DB y NO ha expirado
-        const users = await query(
-            'SELECT id FROM Users WHERE id = ? AND resetPasswordToken = ? AND resetPasswordExpires > NOW()',
-            [userId, token]
-        );
-        
-        if (users.length === 0) return res.status(400).json({ message: 'Token inválido o expirado.' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
 
-        // 3. Hashear la NUEVA contraseña
-        const hashedPassword = await hashPassword(newPassword);
+    const users = await query(
+      'SELECT id FROM Users WHERE id = ? AND resetPasswordToken = ? AND resetPasswordExpires > NOW()',
+      [userId, token]
+    );
+    if (users.length === 0) return res.status(400).send('Token inválido o expirado.');
 
-        // 4. Actualizar contraseña y LIMPIAR campos de reseteo
-        await query(
-            'UPDATE Users SET password = ?, resetPasswordToken = NULL, resetPasswordExpires = NULL WHERE id = ?',
-            [hashedPassword, userId]
-        );
-        res.status(200).json({ message: 'Contraseña restablecida con éxito.' });
-    } catch (error) {
-        if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
-            return res.status(400).json({ message: 'Token inválido o expirado.' });
-        }
-        console.error("Error en resetPassword:", error);
-        res.status(500).json({ message: 'Error interno del servidor.' });
+    const hashedPassword = await hashPassword(newPassword);
+    await query(
+      'UPDATE Users SET password = ?, resetPasswordToken = NULL, resetPasswordExpires = NULL WHERE id = ?',
+      [hashedPassword, userId]
+    );
+
+    // ✅ Respuesta “linda” en navegador
+    res.send(`
+      <!doctype html>
+      <html>
+        <head><meta charset="utf-8"><title>Contraseña actualizada</title></head>
+        <body style="font-family:sans-serif">
+          <h2>Contraseña restablecida con éxito 🎉</h2>
+          <p>Ya podés iniciar sesión con tu nueva contraseña.</p>
+        </body>
+      </html>
+    `);
+  } catch (error) {
+    if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+      return res.status(400).send('Token inválido o expirado.');
     }
+    console.error('Error en resetPassword:', error);
+    res.status(500).send('Error interno del servidor.');
+  }
 };
