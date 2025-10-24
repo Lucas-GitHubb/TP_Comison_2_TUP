@@ -1,4 +1,5 @@
 const conection = require("../config/database"); // este debe exportar .promise()
+const bcrypt = require("bcrypt");
 
 const getAllUsuarios = async (req, res) => {
   try {
@@ -56,15 +57,22 @@ const updateUsuario = async (req, res) => {
 
     const { username, password, rol, estado_usuario, email } = req.body;
 
+    //Hasheo de la contraseña por si se actualiza
+    let hasheoPass = password;
+    if (password) {
+      const saltRounds = 10;
+      hasheoPass = await bcrypt.hash(password, saltRounds);
+    }
+
     const [result] = await conection.query(
       `UPDATE usuarios
-         SET username = ?,
-             password = ?,
-             rol = ?,
-             estado_usuario = ?,
-             email = ?
-       WHERE id_usuario = ?`,
-      [username, password, rol, estado_usuario, email, id]
+        SET username = ?,
+            password = ?,
+            rol = ?,
+            estado_usuario = ?,
+            email = ?
+      WHERE id_usuario = ?`,
+      [username, hasheoPass, rol, estado_usuario, email, id]
     );
 
     if (result.affectedRows === 0) {
@@ -83,10 +91,14 @@ const createUsuario = async (req, res) => {
   try {
     const { username, password, rol, estado_usuario, email } = req.body;
 
+    //Hash de contraseña antes de guardarse
+    const saltRounds = 10;
+    const hasheoPass = await bcrypt.hash(password, saltRounds)
+
     const [result] = await conection.query(
       `INSERT INTO usuarios (username, password, rol, estado_usuario, email)
-       VALUES (?, ?, ?, ?, ?)`,
-      [username, password, rol, estado_usuario, email]
+      VALUES (?, ?, ?, ?, ?)`,
+      [username, hasheoPass, rol, estado_usuario, email]
     );
 
     return res
