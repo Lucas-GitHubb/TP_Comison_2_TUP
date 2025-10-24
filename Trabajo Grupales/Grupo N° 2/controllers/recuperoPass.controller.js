@@ -29,7 +29,7 @@ export const iniciarRecuperoContraseña = async (req, res) => {
     const token = jsonwebtoken.sign({ id: usuario.idUsuario }, process.env.SECRET_JWT, { expiresIn: "1h" });
 
     // 4. Enviar el correo electrónico con el enlace de recuperación
-    const link = `http://localhost:${process.env.PORT}/recuperar-password/${token}`;
+    const link = `http://localhost:3000/api/pass/recuperar?token=${token}`;
     await recuperarContraseña(correoUsuario, link);
 
     return res.status(200).json({ message: "Correo de recuperación enviado" });
@@ -38,3 +38,5 @@ export const iniciarRecuperoContraseña = async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+// Controlador para resetear la contraseña
+export const resetPass = async (req, res) => {};

@@ -6,6 +6,7 @@ import productosRoutes from "./routes/productos.route.js";
 import entregasRoutes from "./routes/entregas.route.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import loginRoutes from "./routes/login.route.js";
+import recuperoPassRoutes from "./routes/recuperoPass.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -20,6 +21,7 @@ app.use("/api/productos", productosRoutes);
 app.use("/api/entregas", entregasRoutes);
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/login", loginRoutes);
+app.use("/api/pass", recuperoPassRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
