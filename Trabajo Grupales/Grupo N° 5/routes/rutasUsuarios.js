@@ -7,6 +7,7 @@ const {
   createUsuario,
   updateUsuario,
   deleteUsuario,
+  resetPassword,
 } = require("./../controllers/usuariosController");
 
 //Traer todos los proveedores
@@ -23,5 +24,7 @@ Routes.put("/:id", updateUsuario);
 
 //Eliminar un proveedor
 Routes.delete("/:id", deleteUsuario);
+
+Routes.post("/reset-password", resetPassword);
 
 module.exports = Routes;
