@@ -1,6 +1,9 @@
 const conection = require("../config/database"); // este debe exportar .promise()
+const jwt = require("jsonwebtoken");
+const secret = process.env.JWT_SECRET
 const bcrypt = require("bcrypt");
 const transporter = require("../config/mailer");
+
 
 const getAllUsuarios = async (req, res) => {
   try {
@@ -28,6 +31,32 @@ const getOneUsuario = async (req, res) => {
       return res.status(404).json({ message: "No existe el usuario" });
     }
     return res.json(rows[0]);
+  } catch (err) {
+    console.error("Error getOneUsuario:", err);
+    return res.status(500).json({ message: "Error en el servidor" });
+  }
+};
+
+const login = async (req, res) => {
+  try {
+    const { username, password } = req.body
+    if(!username || !password) return res.status(400).json({ message: "Faltan datos" })
+    const [rows] = await conection.query(
+      "SELECT * FROM usuarios WHERE username = ? AND password = ?",
+      [username, password]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "El usuario o la contraseña son incorrectos" });
+    }
+    
+    const user = rows[0]
+    delete user.password
+
+    const token = jwt.sign({
+      data: user
+      }, secret, { expiresIn: '1h' });
+
+    return res.status(200).json(token);
   } catch (err) {
     console.error("Error getOneUsuario:", err);
     return res.status(500).json({ message: "Error en el servidor" });
@@ -136,5 +165,6 @@ module.exports = {
   deleteUsuario,
   updateUsuario,
   createUsuario,
+  login,
   resetPassword,
 };
