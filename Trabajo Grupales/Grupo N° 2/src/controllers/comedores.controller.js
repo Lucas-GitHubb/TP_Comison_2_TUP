@@ -7,11 +7,10 @@ export const getAllComedores = async (req, res) => {
     const [results] = await db.query(query);
     res.json(results);
   } catch (err) {
-    console.error("Error al obtener los comedores", err);
-    res.status(500).json({ error: "Error al obtener comedores" });
+    console.error('Error al obtener los comedores', err);
+    res.status(500).json({ error: 'Error al obtener comedores' });
   }
 };
-
 
 export const getUnComedor = async (req, res) => {
   const { id } = req.params;
@@ -21,16 +20,15 @@ export const getUnComedor = async (req, res) => {
     const [results] = await db.query(query, [id]);
 
     if (results.length === 0) {
-      return res.status(404).json({ error: "Comedor no encontrado" });
+      return res.status(404).json({ error: 'Comedor no encontrado' });
     }
 
     res.json(results[0]);
   } catch (err) {
-    console.error("Error al obtener el comedor", err);
-    res.status(500).json({ error: "Error al obtener el comedor" });
+    console.error('Error al obtener el comedor', err);
+    res.status(500).json({ error: 'Error al obtener el comedor' });
   }
 };
-
 
 export const deleteUnComedor = async (req, res) => {
   const { id } = req.params;
@@ -40,16 +38,15 @@ export const deleteUnComedor = async (req, res) => {
     const [results] = await db.query(query, [id]);
 
     if (results.length === 0) {
-      return res.status(404).json({ error: "No fue posible dar de baja" });
+      return res.status(404).json({ error: 'No fue posible dar de baja' });
     }
 
     res.json(results[0]);
   } catch (err) {
-    console.error("Error al dar de baja", err);
-    res.status(500).json({ error: "Error al dar de baja" });
+    console.error('Error al dar de baja', err);
+    res.status(500).json({ error: 'Error al dar de baja' });
   }
 };
-
 
 export const createNewComedor = async (req, res) => {
   const { nombre, direccion, contacto, telefono } = req.body;
@@ -63,12 +60,12 @@ export const createNewComedor = async (req, res) => {
     const [result] = await db.query(query, [nombre, direccion, contacto, telefono]);
 
     res.status(201).json({
-      message: "Comedor creado correctamente",
-      comedorId: result.insertId
+      message: 'Comedor creado correctamente',
+      comedorId: result.insertId,
     });
   } catch (err) {
-    console.error("Error al dar de alta", err);
-    res.status(500).json({ error: "Error al dar de alta" });
+    console.error('Error al dar de alta', err);
+    res.status(500).json({ error: 'Error al dar de alta' });
   }
 };
 
@@ -86,15 +83,14 @@ export const modificateComedor = async (req, res) => {
     const [result] = await db.query(query, [nombre, direccion, contacto, telefono, id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Comedor no encontrado" });
+      return res.status(404).json({ message: 'Comedor no encontrado' });
     }
 
     res.status(200).json({
-      message: "Comedor modificado correctamente",
+      message: 'Comedor modificado correctamente',
     });
   } catch (err) {
-    console.error("Error al modificar el comedor", err);
-    res.status(500).json({ error: "Error al modificar el comedor"});
+    console.error('Error al modificar el comedor', err);
+    res.status(500).json({ error: 'Error al modificar el comedor' });
   }
 };
-
