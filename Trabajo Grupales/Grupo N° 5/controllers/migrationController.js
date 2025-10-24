@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS movimientos_stock (
 CREATE TABLE IF NOT EXISTS usuarios (
   id_usuario INT NOT NULL AUTO_INCREMENT,
   username VARCHAR(50) NOT NULL,
-  password VARCHAR(20) NOT NULL,
+  password VARCHAR(100) NOT NULL,
   rol ENUM('admin','user') NOT NULL DEFAULT 'user',
   estado_usuario ENUM('A','I') NOT NULL,
   email VARCHAR(100),
@@ -156,12 +156,7 @@ VALUES
   (5, 'Entrada', 220, 220, 'Compra mayorista', 1),
   (5, 'Salida',   20, 200, 'Ajuste por merma', 1);
 
-      INSERT INTO usuarios (id_usuario, username, password, rol, estado_usuario, email)
-      VALUES
-        (1, 'agustinS', '1122', 'admin', 'A', 'agustin@gmail.com'),
-        (2, 'luisC', '2233', 'admin', 'A', 'luis@gmail.com'),
-        (3, 'nicoS', '3344', 'user', 'A', 'nico@gmail.com'),
-        (4, 'agustinC', '4455', 'user', 'A', 'chaza@gmail.com');
+     
     `);
 
     res.json({ status: 200, payload: 'Datos insertados' });
@@ -178,3 +173,15 @@ module.exports = {
   createTables,
   createData,
 };
+
+
+/*
+
+ INSERT INTO usuarios (id_usuario, username, password, rol, estado_usuario, email)
+      VALUES
+        (1, 'agustinS', '1122', 'admin', 'A', 'agustin@gmail.com'),
+        (2, 'luisC', '2233', 'admin', 'A', 'luis@gmail.com'),
+        (3, 'nicoS', '3344', 'user', 'A', 'nico@gmail.com'),
+        (4, 'agustinC', '4455', 'user', 'A', 'chaza@gmail.com');
+        
+*/

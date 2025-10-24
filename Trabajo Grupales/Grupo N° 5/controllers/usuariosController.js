@@ -46,10 +46,10 @@ const login = async (req, res) => {
     if (rows.length === 0) return res.status(400).json({ message: "El usuario o la contraseña son incorrectos" });
       
     const user = rows[0]
-    
-    //TODO: descompentar el compared
-    //const comparedPassword = bcrypt.compare(password, user.password)
-    //if(!comparedPassword) return res.status(400).json({ message: "El usuario o la contraseña son incorrectos" })
+
+    const comparedPassword = await bcrypt.compare(password, user.password)
+
+    if(!comparedPassword) return res.status(400).json({ message: "El usuario o la contraseña son incorrectos" })
 
     delete user.password
 
