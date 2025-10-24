@@ -1,6 +1,8 @@
 const conection = require("../config/database"); // este debe exportar .promise()
 const jwt = require("jsonwebtoken");
 const secret = process.env.JWT_SECRET
+const bcrypt = require("bcrypt");
+const transporter = require("../config/mailer");
 
 
 const getAllUsuarios = async (req, res) => {
@@ -127,11 +129,42 @@ const createUsuario = async (req, res) => {
   }
 };
 
+
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const [rows] = await conection.query("SELECT * FROM usuarios WHERE email = ?", [email]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const tempPassword = Math.random().toString(36).slice(-8);
+    const hashed = await bcrypt.hash(tempPassword, 10);
+
+    await conection.query("UPDATE usuarios SET password = ? WHERE email = ?", [hashed, email]);
+
+    await transporter.sendMail({
+      from: `"Soporte" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Recuperación de contraseña",
+      text: `Tu nueva contraseña temporal es: ${tempPassword}`,
+    });
+
+    res.json({ message: "Contraseña temporal enviada al correo." });
+  } catch (err) {
+    console.error("Error resetPassword:", err);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
+
 module.exports = {
   getAllUsuarios,
   getOneUsuario,
   deleteUsuario,
   updateUsuario,
   createUsuario,
-  login
+  login,
+  resetPassword,
 };

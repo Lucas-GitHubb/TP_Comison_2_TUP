@@ -4,6 +4,7 @@ const cors = require("cors");
 const conection = require("./config/database");
 const helmet = require("helmet");
 
+
 const rutasMovimientos = require("./routes/rutasMovimientos");
 const rutasProductos = require("./routes/rutasProductos");
 const rutasStock = require("./routes/rutasStock");

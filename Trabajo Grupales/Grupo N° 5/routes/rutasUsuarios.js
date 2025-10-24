@@ -7,7 +7,8 @@ const {
   createUsuario,
   updateUsuario,
   deleteUsuario,
-  login
+  login,
+  resetPassword,
 } = require("./../controllers/usuariosController");
 const { verifyToken } = require("../middleware/verify-token");
 
@@ -28,5 +29,8 @@ Routes.put("/:id", updateUsuario);
 
 //Eliminar un proveedor
 Routes.delete("/:id",verifyToken, deleteUsuario);
+
+//Reset de contraseña
+Routes.post("/reset-password", resetPassword);
 
 module.exports = Routes;
