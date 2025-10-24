@@ -1,11 +1,13 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';  
+dotenv.config();
 
 //creamos el servicio para poder utilizar el email
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: "martincardozo1993xp@gmail.com",
-    pass: "radt cwvs dzxs tead"
+    user: process.env.EMAIL,
+    pass: process.env.PASS_EMAIL,
   }
 });
 
@@ -20,7 +22,7 @@ export const recuperarContraseña = async (correoUsuario, link) => {
   `;
 
   const mailOptions = {
-    from: "martincardozo1993xp@gmail.com",
+    from: `"Administracion" <${process.env.EMAIL}>`,
     to: correoUsuario,
     subject: "Recuperación de Contraseña",
     html: htmlTemplate

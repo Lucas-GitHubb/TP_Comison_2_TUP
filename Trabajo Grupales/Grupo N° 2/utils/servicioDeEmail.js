@@ -30,7 +30,7 @@ const enviarEmailDeBievenida = async (correoUsuario, nombreUsuario = "Usuario") 
                 <!-- Body -->
                 <tr>
                   <td style="padding: 40px 30px;">
-                    <h2 style="color: #333333; margin-top: 0;">Hola ${nombreUsuario},</h2>
+                    <h2 style="color: #333333; margin-top: 0;">Hola ${correoUsuario},</h2>
                     <p style="color: #666666; font-size: 16px; line-height: 1.6;">
                       Estamos <strong>encantados</strong> de tenerte con nosotros. Tu cuenta ha sido creada exitosamente y ya puedes comenzar a disfrutar de nuestros servicios.
                     </p>
