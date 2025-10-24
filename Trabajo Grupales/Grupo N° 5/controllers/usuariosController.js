@@ -41,15 +41,17 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body
     if(!username || !password) return res.status(400).json({ message: "Faltan datos" })
-    const [rows] = await conection.query(
-      "SELECT * FROM usuarios WHERE username = ? AND password = ?",
-      [username, password]
-    );
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "El usuario o la contraseña son incorrectos" });
-    }
+
+    const [rows] = await conection.query("SELECT * FROM usuarios WHERE username = ?",[username]);
     
+    if (rows.length === 0) return res.status(400).json({ message: "El usuario o la contraseña son incorrectos" });
+      
     const user = rows[0]
+    
+    //TODO: descompentar el compared
+    //const comparedPassword = bcrypt.compare(password, user.password)
+    //if(!comparedPassword) return res.status(400).json({ message: "El usuario o la contraseña son incorrectos" })
+
     delete user.password
 
     const token = jwt.sign({
