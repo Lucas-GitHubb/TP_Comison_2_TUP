@@ -1,14 +1,28 @@
-const mysql = require('mysql2/promise');
-const dotenv = require('dotenv');
-dotenv.config();
+// src/config/dataBase.js
+import mysql from 'mysql2/promise';
+import 'dotenv/config'; 
 
-const pool = mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
-    port: process.env.PORT_DB || 3306,
-    
-});
+const dbConfig = {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+};
 
-module.exports = { pool };
+const pool = mysql.createPool(dbConfig);
+
+// Función universal para ejecutar consultas
+export const query = async (sql, params) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [results] = await connection.query(sql, params);
+        return results;
+    } catch (error) {
+        console.error("Error en la consulta a la base de datos:", error.message);
+        throw error;
+    } finally {
+        if (connection) connection.release();
+    }
+};
