@@ -1,11 +1,13 @@
-const express = require('express');
+import express from 'express';
+import { listar, obtener, crear, actualizar, eliminar } from '../controllers/socios.controller.js';
+import { autenticarToken } from '../middleware/auth.middleware.js';
+
 const router = express.Router();
-const ctrl = require('../controllers/socios.controller');
 
-router.get('/', ctrl.listar);
-router.get('/:id', ctrl.obtener);
-router.post('/', ctrl.crear);
-router.put('/:id', ctrl.actualizar);
-router.delete('/:id', ctrl.eliminar);
+router.get('/', autenticarToken, listar);
+router.get('/:id', autenticarToken, obtener);
+router.post('/', crear);
+router.put('/:id', autenticarToken, actualizar);
+router.delete('/:id', autenticarToken, eliminar);
 
-module.exports = router;
+export default router;
