@@ -1,6 +1,6 @@
 // src/config/dataBase.js
-import mysql from 'mysql2/promise';
-import 'dotenv/config'; 
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv/config'); 
 
 const pool = mysql.createPool({
     host: process.env.HOST,

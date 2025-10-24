@@ -1,11 +1,11 @@
-import express from 'express';
+const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const serviciosRoutes = require('./routes/servicios.routes.js');
-const clientesRoutes = require('./routes/clientes.routes.js');
-const turnosRoutes = require('./routes/turnos.routes.js');
+const serviciosRoutes = require('./src/routes/servicios.routes.js');
+const clientesRoutes = require('./src/routes/clientes.routes.js');
+const turnosRoutes = require('./src/routes/turnos.routes.js');
 
 dotenv.config();
 const app = express();
