@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS socios (
   nombre VARCHAR(150) NOT NULL,
   dni VARCHAR(20) NOT NULL UNIQUE,
   telefono VARCHAR(50),
-  contrasena varchar(30),
+  contrasena varchar(250),
   email VARCHAR(150),
   fecha_alta DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Cambiado a DATETIME
   activo TINYINT(1) DEFAULT 1,
