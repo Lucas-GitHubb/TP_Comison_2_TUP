@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { listar, deudas, registrar } from '../controllers/pagos.controller.js';
+import { autenticarToken } from '../middleware/auth.middleware.js';
+
 const router = express.Router();
-const ctrl = require('../controllers/pagos.controller');
 
-router.get('/', ctrl.listar);
-router.get('/deudas/:socioId', ctrl.deudas);
-router.post('/', ctrl.registrar);
+router.get('/', autenticarToken, listar);
+router.get('/deudas/:socioId', autenticarToken, deudas);
+router.post('/', autenticarToken, registrar);
 
-module.exports = router;
+export default router;
