@@ -1,5 +1,5 @@
 import db from '../config/db.js';
-
+// prueba Marcos
 export const getAllComedores = async (req, res) => {
   const query = `SELECT * FROM comedores`;
 
