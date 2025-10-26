@@ -1,5 +1,6 @@
 
-const db = require('../config/db'); 
+const db = require('../config/database');
+
 
 exports.getVentas = (req, res) => {
   db.query('SELECT * FROM ventas', (err, results) => {
