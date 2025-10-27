@@ -1,12 +1,27 @@
-const express = require("express")
-const {getSocios, getSocio, createSocio, updateSocio, darBajaSocio, reactivarSocio} = require("../controllers/socios.controlleres");
+const express = require("express");
 const router = express.Router();
+const { verificarToken } = require("../middleware/auth");
 
-router.get("/socios",getSocios);
-router.get("/socios/:id", getSocio);
-router.post("/socios/crear", createSocio);
-router.put("/socios/actualizar/:id",updateSocio);
-router.darBajaSocio("/socios/darBaja/:id",darBajaSocio);
-router.reactivarSocio("/socios/reactivar/:id",reactivarSocio);
+const {
+  getSocios,
+  getSocio,
+  createSocio,
+  updateSocio,
+  darBajaSocio,
+  reactivarSocio,
+  loginSocio,
+  recuperarPassword
+} = require("../controllers/socios.controlleres");
 
-module.exports= router
+
+router.post("/login", loginSocio);
+router.post("/recuperar", recuperarPassword);
+router.post("/crear", createSocio);
+
+router.get("/", verificarToken, getSocios);
+router.get("/:id", verificarToken, getSocio);
+router.put("/actualizar/:id", verificarToken, updateSocio);
+router.put("/darBaja/:id", verificarToken, darBajaSocio);
+router.put("/reactivar/:id", verificarToken, reactivarSocio);
+
+module.exports = router;

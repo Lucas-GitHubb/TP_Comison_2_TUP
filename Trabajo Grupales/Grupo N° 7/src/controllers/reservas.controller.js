@@ -1,6 +1,5 @@
-const { conection } = require("../DB")
+const { conection } = require("../config/DB")
 
-// Mostrar todas las reservas
 const getReservas = (req, res) => {
     const sql = "SELECT * FROM reservas"
     conection.query(sql, (error, results) => {
@@ -9,7 +8,6 @@ const getReservas = (req, res) => {
     })
 }
 
-// Crear una reserva
 const addReserva = (req, res) => {
     const { socio_id, actividad_id, fecha, hora } = req.body
 
@@ -49,7 +47,6 @@ const addReserva = (req, res) => {
     })
 }
 
-// Eliminar reserva
 const deleteReserva = (req, res) => {
     const id = req.params.id
     const sql = "DELETE FROM reservas WHERE id = ?"

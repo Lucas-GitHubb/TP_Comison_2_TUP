@@ -1,5 +1,6 @@
 const pool = require('../config/DB');
 
+
 // Listar todos los pagos
 exports.getAll = (req, res) => {
   const sql = `

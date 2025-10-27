@@ -1,0 +1,25 @@
+# Dependencias
+/node_modules
+/npm-debug.log
+/yarn-debug.log
+
+# Variables de Entorno y Secretos (CRÍTICO)
+.env
+.env.local
+.env.*.local
+
+# Build y Output
+/dist
+/buildgit 
+/coverage
+
+# Archivos específicos del Sistema Operativo
+.DS_Store
+Thumbs.db
+
+# Otros Archivos de Log
+*.log
+
+# Archivos de Bases de Datos
+*.sqlite
+*.db
