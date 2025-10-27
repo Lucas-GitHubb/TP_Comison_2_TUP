@@ -1,0 +1,71 @@
+//INSTALAR HTTP CLIENT EN VSCODE PARA USAR ESTE ARCHIVO
+
+
+### 🔐 LOGIN (para obtener token)
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "password": "123456"
+}
+
+###
+# Guarda el token de la respuesta arriba y usalos abajo en: 
+# Authorization: Bearer <TOKEN_AQUI>
+
+###  REGISTRO DE USUARIO
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "bruno lopez",
+  "email": "lopezbrunoemanuel@gmail.com",
+  "password": "1212",
+  "rol": "admin"
+}
+
+###  OBTENER CLIENTES (requiere login)
+GET http://localhost:3000/api/clientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiYWRtaW4iLCJub21icmUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzYxNjA1NTY3LCJleHAiOjE3NjE2MTI3Njd9.JN99xlk59CxCssOjzjue8_APLxjXQ2SAm1TyXLmhh0U
+
+###  CREAR CLIENTE (requiere login)
+POST http://localhost:3000/api/clientes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiYWRtaW4iLCJub21icmUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzYxNDQ2OTE5LCJleHAiOjE3NjE0NTQxMTl9.sgKOFlcNge1W6PgazHgwo6VFLXjIYdpdubJoXB8HFr4
+Content-Type: application/json
+
+{
+  "nombre": "Daniela",
+  "apellido": "Gomez",
+  "email": "daiana@correo.com"
+}
+
+###  CREAR SERVICIO (solo admin)
+POST http://localhost:3000/api/servicios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiYWRtaW4iLCJub21icmUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzYxNDQ2OTE5LCJleHAiOjE3NjE0NTQxMTl9.sgKOFlcNge1W6PgazHgwo6VFLXjIYdpdubJoXB8HFr4
+Content-Type: application/json
+
+{
+  "nombre": "Entrenamiento Personalizado",
+  "descripcion": "Plan mensual con seguimiento individual.",
+  "precio_total": 9000
+}
+
+###  CREAR PLAN DE PAGO (requiere login)
+POST http://localhost:3000/api/planes-pago
+Authorization: Bearer <TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "cliente_id": 1,
+  "servicio_id": 1,
+  "numero_cuotas": 3
+}
+
+###  MARCAR CUOTA COMO PAGADA (requiere login)
+PUT http://localhost:3000/api/cuotas/1/pagar
+Authorization: Bearer <TOKEN_AQUI>
+
+###  GENERAR REPORTE DE CLIENTE (requiere login)
+GET http://localhost:3000/api/reportes/cliente/1
+Authorization: Bearer <TOKEN_AQUI>

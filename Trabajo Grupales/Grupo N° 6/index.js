@@ -2,14 +2,16 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const clienteRoutes = require('./routes/clienteRoutes');
-const servicioRoutes = require('./routes/servicioRoutes');
-const pagoRoutes = require('./routes/pagoRoutes');
+const clienteRoutes = require('./src/routes/clienteRoutes');
+const servicioRoutes = require('./src/routes/servicioRoutes');
+const pagoRoutes = require('./src/routes/pagoRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', authRoutes);
 
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/servicios', servicioRoutes);
