@@ -1,11 +1,14 @@
-const express = require("express")
+const Router = require("express")
+
+const { verificarToken } = require("../middleware/auth");
+const router = Router();
 const {getActividades, CreateAtividades, updateActividades, deleteActividades} = require("../controllers/actividades.controler")
 
-const router = express.router()
+
 
 router.get("/", getActividades)
-router.post("/", CreateAtividades)
-router.put("/:id", updateActividades)
+router.post("/", verificarToken, CreateAtividades);
+router.put("/:id", verificarToken, updateActividades);
 router.delete("/:id", deleteActividades)
 
 module.exports = router

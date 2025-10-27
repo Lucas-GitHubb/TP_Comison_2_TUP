@@ -1,10 +1,12 @@
-const express = require('express');
+import express from 'express';
+import { listar, obtener, crear, eliminar } from '../controllers/membresias.controller.js';
+import { autenticarToken } from '../middleware/auth.middleware.js';
+
 const router = express.Router();
-const ctrl = require('../controllers/membresias.controller');
 
-router.get('/', ctrl.listar);
-router.get('/:id', ctrl.obtener);
-router.post('/', ctrl.crear);
-router.delete('/:id', ctrl.eliminar);
+router.get('/', autenticarToken, listar);
+router.get('/:id', autenticarToken, obtener);
+router.post('/', autenticarToken, crear);
+router.delete('/:id', autenticarToken, eliminar);
 
-module.exports = router;
+export default router;

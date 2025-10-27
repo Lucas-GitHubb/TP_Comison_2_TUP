@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const sociosController = require('../controllers/socios.controller');
+const verificarToken = require("../middlewares/authMiddleware");
 
-// Rutas CRUD
-router.get('/', sociosController.getAll);
-router.get('/:id', sociosController.getById);
-router.post('/', sociosController.create);
-router.put('/:id', sociosController.update);
-router.delete('/:id', sociosController.remove);
+// Rutas CRUD protegidas
+router.get('/', verificarToken, sociosController.getAll);
+router.get('/:id', verificarToken, sociosController.getById);
+router.post('/', verificarToken, sociosController.create);
+router.put('/:id', verificarToken, sociosController.update);
+router.delete('/:id', verificarToken, sociosController.remove);
 
 module.exports = router;
