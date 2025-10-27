@@ -1,5 +1,6 @@
 const pool = require('../config/DB');
 
+
 // Obtener todos los deportes
 exports.getAll = (req, res) => {
   const sql = 'SELECT * FROM deportes ORDER BY id DESC';

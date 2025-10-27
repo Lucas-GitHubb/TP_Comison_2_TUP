@@ -1,10 +1,11 @@
+const express = require("express");
+const router = express.Router();
+const { verificarToken } = require("../middleware/auth");
 
-const express = require("express")
-const router = express.Router()
-const reservasController = require("../controllers/reservas.controller")
+const { getReservas, addReserva, deleteReserva } = require("../controllers/reservas.controller");
 
-router.get("/", reservasController.getReservas)
-router.post("/", reservasController.addReserva)
-router.delete("/:id", reservasController.deleteReserva)
+router.get("/", getReservas);
+router.post("/", verificarToken, addReserva); 
+router.delete("/:id", verificarToken, deleteReserva); 
 
-module.exports = router
+module.exports = router;

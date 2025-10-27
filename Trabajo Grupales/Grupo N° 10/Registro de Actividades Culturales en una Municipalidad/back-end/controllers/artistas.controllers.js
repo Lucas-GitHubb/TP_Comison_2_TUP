@@ -1,5 +1,5 @@
 const connection = require('../config/bd');
-
+const {hashPass} = require("../utils/hash.utils")
 
 const getAllArtistas = (req, res) => {
     const consulta = "SELECT * FROM artistas WHERE activo = true";
@@ -20,11 +20,13 @@ const getArtistasById = (req, res) => {
     })
 }
 
-const createArtista = (req, res) => {
-    const { nombre, tipo_arte, biografia, email, telefono } = req.body;
-    const consulta = "INSERT INTO artistas (nombre, tipo_arte, biografia, email, telefono) VALUES (?, ?, ?, ?, ?)";
+const createArtista =  (req, res) => {
+    const { nombre, tipo_arte, biografia, email, contra, telefono } = req.body;
+    const consulta = "INSERT INTO artistas (nombre, tipo_arte, biografia, email, contra, telefono) VALUES (?, ?, ?, ?, ?, ?)";
 
-    connection.query(consulta, [nombre, tipo_arte, biografia, email, telefono], (err, results) => {
+    const contraEmp =  hashPass(contra)
+
+    connection.query(consulta, [nombre, tipo_arte, biografia, email, contraEmp, telefono], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json({ message: 'Artista creado' });
     })
@@ -33,9 +35,11 @@ const createArtista = (req, res) => {
 
 const updateArtista = (req, res) => {
     const { id } = req.params;
-    const { nombre, tipo_arte, biografia, email, telefono, activo } = req.body;
-    const consulta = "UPDATE artistas SET nombre=?, tipo_arte=?, biografia=?, email=?, telefono=?, activo=? WHERE id=?";
-    connection.query(consulta, [nombre, tipo_arte, biografia, email, telefono, activo, id], (err, results) => {
+    const { nombre, tipo_arte, biografia, email, telefono, contra, activo } = req.body;
+    const consulta = "UPDATE artistas SET nombre=?, tipo_arte=?, biografia=?, email=?, telefono=?, contra=?, activo=? WHERE id=?";
+    const contraEmp =  hashPass(contra)
+
+    connection.query(consulta, [nombre, tipo_arte, biografia, email, telefono, contraEmp, activo, id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Artista actualizado' });
     })

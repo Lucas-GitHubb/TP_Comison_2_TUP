@@ -1,12 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { connection } from "./config/DB.js";
-
 import sociosRoutes from "./routes/socios.routes.js";
 import deportesRoutes from "./routes/deportes.routes.js";
 import membresiasRoutes from "./routes/membresias.routes.js";
-import reportesRoutes from "./routes/reportes.routes.js";
+import mailRoutes from "./routes/mail.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import loginRoutes from "./routes/login.routes.js";
 
 dotenv.config();
 
@@ -18,8 +18,9 @@ app.use(express.json());
 app.use("/api/socios", sociosRoutes);
 app.use("/api/deportes", deportesRoutes);
 app.use("/api/membresias", membresiasRoutes);
-app.use("/api/reportes", reportesRoutes);
-
+app.use("/api/mail", mailRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/login", loginRoutes);
 // Puerto
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
