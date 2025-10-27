@@ -46,7 +46,6 @@ app.get('/', (req, res) => {
       productos: '/api/productos',
       ventas: '/api/ventas',
       compras: '/api/compras',
-      inventario: '/api/inventario',
       metricas: '/api/metricas'
     }
   });

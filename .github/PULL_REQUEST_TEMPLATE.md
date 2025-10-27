@@ -1,14 +1,14 @@
 # 📌 Entrega de Trabajo Práctico
 
 ## 🧑‍🎓 Datos del Alumno
-- **Apellido y Nombre:**  
-- **Legajo:**  
-- **Comisión / Curso (si aplica):**  
+- **Apellido y Nombre:Denise Sanchez 
+- **Legajo:61388  
+- **Comisión / Curso (si aplica):2
 
 ## 📘 Información del Trabajo
-- **Número de TP:**  
-- **Título del TP:**  
-- **Rama utilizada:**  
+- **Número de TP:**  1
+- **Título del TP:**  gestion comercial
+- **Rama utilizada:**  DeniseSanchez_61388_TP1
 
 ## ✅ Checklist antes de enviar el PR
 - [ ] La carpeta tiene mi **ApellidoNombre_Legajo** como nombre.  
