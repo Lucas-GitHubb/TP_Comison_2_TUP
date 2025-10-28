@@ -1,5 +1,17 @@
 const pool = require('../config/db');
 
+
+
+exports.obtenerClientes = async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM clientes');
+    res.status(200).json(rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener clientes', details: error.message });
+  }
+};
+
+
 exports.crearCliente = async (req, res) => {
   const { nombre, apellido, email } = req.body;
   if (!nombre || !apellido || !email) {
