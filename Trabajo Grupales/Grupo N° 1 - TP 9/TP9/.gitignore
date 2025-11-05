@@ -1,0 +1,11 @@
+# Archivos de configuración y carpetas a ignorar
+
+# Variables de entorno sensibles
+.env
+
+# Dependencias de Node
+node_modules/
+
+# Logs y otros temporales de desarrollo
+*.log
+npm-debug.log*

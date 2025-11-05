@@ -1,0 +1,22 @@
+{
+  "name": "tp9",
+  "version": "1.0.0",
+  "description": "TP 9 – Sistema de Gestión de Club Deportivo\r Un club social necesita un backend para manejar socios, deportes y pagos de cuotas. El sistema\r debe permitir: registrar socios (nombre, DNI, contacto); registrar deportes (fútbol, natación, etc.);\r asignar socios a un deporte; registrar pagos mensuales y calcular deudas pendientes. Objetivo:\r relacionar múltiples entidades y practicar agregaciones SQL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.15.2",
+    "nodemailer": "^7.0.10",
+    "nodemon": "^3.1.10"
+  }
+}
