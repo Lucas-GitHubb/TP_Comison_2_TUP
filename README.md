@@ -116,5 +116,149 @@ sin errores de conexión a base de datos.
 Recordá que Prisma no usa variables sueltas como DB_HOST o DB_USER.
 Usa una sola cadena de conexión DATABASE_URL, lo que simplifica la configuración y evita errores comunes.
 
+
+construccion del front 
+
+arquitectura de carpetas 
+
+📦 src/
+│
+├── 📁 components/              # Componentes UI reutilizables
+│   ├── Button.jsx
+│   ├── Modal.jsx
+│   ├── InputField.jsx
+│   └── Table.jsx
+│
+├── 📁 hooks/                   # Custom hooks globales
+│   ├── useFetch.js
+│   ├── useAuth.js
+│   ├── useModal.js
+│   └── usePagination.js
+│
+├── 📁 pages/                   # Páginas principales (views)
+│   ├── HomePage.jsx
+│   ├── LoginPage.jsx
+│   ├── DashboardPage.jsx
+│   └── NotFoundPage.jsx
+│
+├── 📁 services/                # Lógica de conexión con API / Endpoints
+│   ├── api.js                  # Config base de Axios
+│   ├── usuariosService.js
+│   ├── ventasService.js
+│   ├── productosService.js
+│   └── authService.js
+│
+├── 📁 proteccionRutas/         # Rutas privadas o protegidas
+│   ├── ProtectedRoute.jsx
+│   ├── AdminRoute.jsx
+│   └── RoleBasedRoute.jsx
+│
+├── 📁 store/                   # Estado global (Zustand o Redux)
+│   ├── useAuthStore.js
+│   ├── useVentasStore.js
+│   └── useThemeStore.js
+│
+├── 📁 styles/                  # Estilos globales
+│   ├── index.css
+│   ├── variables.css
+│   └── themes/
+│       ├── light.css
+│       └── dark.css
+│
+├── 📁 utils/                   # Funciones auxiliares
+│   ├── formatDate.js
+│   ├── validateEmail.js
+│   ├── calculateTotal.js
+│   └── capitalize.js
+│
+├── 📁 router/                  # Configuración general de rutas
+│   ├── AppRouter.jsx
+│   ├── routes.js               # Lista de rutas y roles
+│   └── index.js
+│
+├── 📁 endpoint/                # URLs centralizadas del backend
+│   └── endpoints.js
+│
+├── App.jsx                     # Componente raíz
+├── main.jsx                    # Punto de entrada principal
+└── vite.config.js
+
+🧩 Justificación por nivel
+Nivel	Propósito	Ejemplo
+assets/	Recursos estáticos globales	Logos, íconos, imágenes
+components/	Elementos UI reutilizables	Botones, Modales, Inputs
+features/	Módulos específicos (auth, ventas, usuarios, etc.)	Divide la lógica por dominio
+hooks/	Custom hooks globales	useFetch, useModal
+layouts/	Plantillas de diseño	DashboardLayout, PublicLayout
+pages/	Páginas enrutadas	/home, /dashboard
+router/	Navegación y protección de rutas	AppRouter, ProtectedRoute
+services/	Capa de comunicación con la API	Axios, endpoints REST
+store/	Estado global (Zustand / Redux)	useAuthStore, useThemeStore
+utils/	Funciones auxiliares puras	Validaciones, formateos
+styles/	CSS global y variables	Estilos comunes y temas
+
+Atencion (de esta forma solo se configura una vez axios en el proyecto y se importa en los servicios, osea una sola vez)
+
+⚙️ Ejemplo de configuración Axios base
+
+📁 src/services/api.js
+
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  headers: { 'Content-Type': 'application/json' },
+});
+
+export default api;
+
+---
+
+hooks personalizado para fetch exportados por constantes retornando datos, carga y error funciones etc, en lo mismo podemos usar todo el crud de la peticiopnes 
+📁 src/hooks/useFetch.js
+
+ejemplo:
+
+import { useState, useEffect } from 'react';
+import api from '../services/api';
+
+export const useFetch = (url) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get(url);
+        setData(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [url]);
+
+  return { data, loading, error };
+};
+
+de esta forma lo llamamos en cualquier componente las veces que queramos
+---
+store personalizado con zustand
+📁 src/store/useAuthStore.js
+import create from 'zustand';
+export const useAuthStore = create((set) => ({
+  user: null,
+  token: null,
+  setUser: (user) => set({ user }),
+  setToken: (token) => set({ token }),
+  logout: () => set({ user: null, token: null }),
+}));
+---
+# 📘 Trabajo Práctico – Semana 3
+
 📚 UTN – Programación 4 | Comisión 2
 Profesor: Matías Chocobar
