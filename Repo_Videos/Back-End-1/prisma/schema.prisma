@@ -1,15 +1,72 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model clientes {
+  id_cliente Int      @id @default(autoincrement())
+  nombre     String?  @db.VarChar(50)
+  apellido   String?  @db.VarChar(60)
+  DNI        String?  @db.VarChar(60)
+  activo     Boolean? @default(true)
+  ventas     ventas[]
+}
+
+model productos {
+  id_producto     Int               @id @default(autoincrement())
+  nombre          String            @db.VarChar(100)
+  descripcion     String?           @db.Text
+  precio          Decimal           @db.Decimal(10, 2)
+  stock           Int?              @default(0)
+  activo          Boolean?          @default(true)
+  ventas_detalles ventas_detalles[]
+}
+
+model usuarios {
+  id_usuario Int           @id @default(autoincrement())
+  username   String?       @db.VarChar(50)
+  pass       String?       @db.VarChar(60)
+  Rol        usuarios_Rol?
+  activo     Boolean?      @default(true)
+  mail       String?       @db.VarChar(250)
+  ventas     ventas[]
+}
+
+model ventas {
+  id_venta        Int               @id @default(autoincrement())
+  id_usuario      Int
+  id_cliente      Int
+  fecha           DateTime?         @default(now()) @db.DateTime(0)
+  total           Decimal?          @default(0.00) @db.Decimal(10, 2)
+  activo          Boolean?          @default(true)
+  usuarios        usuarios          @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "ventas_ibfk_1")
+  clientes        clientes          @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "ventas_ibfk_2")
+  ventas_detalles ventas_detalles[]
+
+  @@index([id_cliente], map: "id_cliente")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model ventas_detalles {
+  id_detalle      Int       @id @default(autoincrement())
+  id_venta        Int
+  id_producto     Int
+  cantidad        Int
+  precio_unitario Decimal   @db.Decimal(10, 2)
+  subtotal        Decimal?  @db.Decimal(10, 2)
+  ventas          ventas    @relation(fields: [id_venta], references: [id_venta], onDelete: NoAction, onUpdate: NoAction, map: "ventas_detalles_ibfk_1")
+  productos       productos @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "ventas_detalles_ibfk_2")
+
+  @@index([id_producto], map: "id_producto")
+  @@index([id_venta], map: "id_venta")
+}
+
+enum usuarios_Rol {
+  Admin
+  Empleado
 }

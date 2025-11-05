@@ -65,3 +65,5 @@ Repo_Videos/Back-End-1/dist/
 Repo_Videos/Back-End-1/logs/
 
 /src/generated/prisma
+
+/src/generated/prisma

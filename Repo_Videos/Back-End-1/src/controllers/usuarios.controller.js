@@ -3,7 +3,18 @@ const prisma = require('../config/prisma');
 const {hashPassword} = require('../utils/hash.utils');
 
 
-
+const mostrarTodosUsuarios = async (req, res) => {
+    try {
+        const usuarios = await prisma.usuarios.findMany({
+            where: {
+                activo: 1
+            }
+        });
+        res.status(200).json(usuarios);
+    } catch (error) {
+        console.error("Error al obtener los usuarios: ", error);
+        res.status(500).json({message: "Error al obtener los usuarios"});
+    }}
 // const mostrarTodosUsuarios = (req, res) => {
 
 //     const queryUsuario = "select * from Usuarios where activo = 1";
@@ -38,11 +49,42 @@ const {hashPassword} = require('../utils/hash.utils');
 //     })
 // }
 
-// const mostrarUsuarioPorId = (req, res) => {
-//     const id = req.params.id;
-//     const queryUsuarioId = "select * from Usuarios where id = ?";
+const mostrarUsuariosInactivos = async(req,res)=>{
+    try {
+        const usuariosInactivos = await prisma.usuarios.findMany({
+            where: {
+                activo: 0
+            }
+        });
+        if(usuariosInactivos.length === 0){
+            return res.status(404).json({message: "No hay usuarios inactivos"});
+        }
 
-//     connection.query(queryUsuarioId, [id], (error, results) => {
+        res.status(200).json(usuariosInactivos);
+    } catch (error) {
+        console.error("Error al obtener los usuarios inactivos: ", error);
+        res.status(500).json({message: "Error al obtener los usuarios inactivos"});
+    }
+}
+
+const mostrarUsuarioPorId = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const usuario = await prisma.usuarios.findUnique({
+            where: {
+                id: Number(id)
+            }
+        });
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+        res.status(200).json(usuario);
+    } catch (error) {
+        console.error("Error al obtener el usuario: ", error);
+        res.status(500).json({ message: "Error al obtener el usuario" });
+    }
+}
 //         if (error) {
 //             console.error("Error al obtener el usuario: ", error);
 //             res.status(500).json({ message: "Error al obtener el usuario" });
@@ -50,7 +92,27 @@ const {hashPassword} = require('../utils/hash.utils');
 //         res.status(200).json(results);
 //     });
 // }
+
+const crearUsuario = async (req, res) => {
+    const { nombre, password, rol} = req.body;
+    try {
+        const hashedPassword = await hashPassword(password);
+        const nuevoUsuario = await prisma.usuarios.create({
+            data: {
+                username: nombre,
+                pass: hashedPassword,
+                rol: rol
+            }
+        });
+        res.status(201).json({ message: "Usuario creado exitosamente", usuario: nuevoUsuario });
+    } catch (error) {
+        console.error("Error al crear el usuario: ", error);
+        res.status(500).json({ message: "Error al crear el usuario" });
+    }
+}
+
 // const crearUsuario = (req, res) => {
+
 //     const { nombre, password, rol} = req.body;
 
 //     const hashedPassword =  hashPassword(password);
@@ -66,6 +128,29 @@ const {hashPassword} = require('../utils/hash.utils');
 //     });
 // }
 
+
+const actualizarUsuario = async (req, res) => {
+    const id = req.params.id;
+    const { nombre, password, rol, activo } = req.body;
+    try {
+        const hashedPassword = await hashPassword(password);
+        const usuarioActualizado = await prisma.usuarios.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                username: nombre,
+                pass: hashedPassword,
+                rol: rol,
+                activo: activo
+            }
+        });
+        res.status(200).json({ message: "Usuario actualizado exitosamente", usuario: usuarioActualizado });
+    } catch (error) {
+        console.error("Error al actualizar el usuario: ", error);
+        res.status(500).json({ message: "Error al actualizar el usuario" });
+    }
+}
 // const actualizarUsuario = async (req, res) => {
 //     const id = req.params.id;
 //     const { nombre, password, rol, activo } = req.body;
@@ -82,7 +167,23 @@ const {hashPassword} = require('../utils/hash.utils');
 //     });
 // }
 
-// //eliminacion fisica
+
+const eliminarUsuario = async (req, res) => {
+    const id = req.params.id;
+    try {
+        await prisma.usuarios.delete({
+            where: {
+                id: Number(id)
+            }
+        });
+        res.status(200).json({ message: "Usuario eliminado exitosamente" });
+    }
+    catch (error) {
+        console.error("Error al eliminar el usuario: ", error);
+        res.status(500).json({ message: "Error al eliminar el usuario" });
+    }
+}
+//eliminacion fisica
 // const eliminarUsuario = (req, res) => {
 //     const id = req.params.id;
 //     const queryEliminarUsuario = "DELETE FROM Usuarios WHERE id = ?";
@@ -95,7 +196,25 @@ const {hashPassword} = require('../utils/hash.utils');
 //     });
 // }
 
-// //eliminacion logica
+const eliminadoLogicoUsuario = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const usuarioDesactivado = await prisma.usuarios.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                activo: 0
+            }
+        });
+        res.status(200).json({ message: "Usuario desactivado exitosamente", usuario: usuarioDesactivado });
+    }
+    catch (error) {
+        console.error("Error al desactivar el usuario: ", error);
+        res.status(500).json({ message: "Error al desactivar el usuario" });
+    }
+}
+//eliminacion logica
 // const eliminadoLogicoUsuario = (req, res) => {
 //     const id = req.params.id;
 //     const queryActivarUsuario = "UPDATE Usuarios SET activo = ? WHERE id = ?";
@@ -108,7 +227,25 @@ const {hashPassword} = require('../utils/hash.utils');
 //     });
 // }
 
-// // Activar usuarios inactivos
+const activarUsuario = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const usuarioActivado = await prisma.usuarios.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                activo: 1
+            }
+        });
+        res.status(200).json({ message: "Usuario activado exitosamente", usuario: usuarioActivado });
+    }
+    catch (error) {
+        console.error("Error al activar el usuario: ", error);
+        res.status(500).json({ message: "Error al activar el usuario" });
+    }
+}
+// Activar usuarios inactivos
 //  const activarUsuario = (req, res) => { 
 
 //     const id= req.params.id;
@@ -127,111 +264,6 @@ const {hashPassword} = require('../utils/hash.utils');
 //     });
 //  }
 
-const mostrarTodosUsuarios = async (req, res) => {
-  try {
-    const usuarios = await prisma.Usuarios.findMany({
-      where: { activo: 1 }
-    });
-    res.status(200).json(usuarios);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener los usuarios" });
-  }
-};
-
-const mostrarUsuariosInactivos = async (req, res) => {
-  try {
-    const usuarios = await prisma.Usuarios.findMany({
-      where: { activo: 0 }
-    });
-
-    if (usuarios.length === 0) {
-      return res.status(404).json({ message: "No hay usuarios inactivos" });
-    }
-
-    res.status(200).json(usuarios);
-  } catch (error) {
-    res.status(500).json({ message: "Error al obtener los usuarios inactivos" });
-  }
-};
-
-const mostrarUsuarioPorId = async (req, res) => {
-  const id = Number(req.params.id);
-  try {
-    const usuario = await prisma.Usuarios.findUnique({
-      where: { id_usuario: id }
-    });
-    res.status(200).json(usuario);
-  } catch (error) {
-    res.status(500).json({ message: "Error al obtener el usuario" });
-  }
-};
-
-const crearUsuario = async (req, res) => {
-  const { nombre, password, rol } = req.body;
-  const hashedPassword = hashPassword(password);
-
-  try {
-    await prisma.Usuarios.create({
-      data: {
-        username: nombre,
-        pass: hashedPassword,
-        rol,
-        activo: 1
-      }
-    });
-    res.status(201).json({ message: "Usuario creado exitosamente" });
-  } catch (error) {
-    res.status(500).json({ message: "Error al crear el usuario" });
-  }
-};
-
-const actualizarUsuario = async (req, res) => {
-  const id = Number(req.params.id);
-  const { nombre, password, rol, activo } = req.body;
-  const hashedPassword = hashPassword(password);
-
-  try {
-    await prisma.Usuarios.update({
-      where: { id_usuario: id },
-      data: {
-        username: nombre,
-        pass: hashedPassword,
-        rol,
-        activo
-      }
-    });
-    res.status(200).json({ message: "Usuario actualizado exitosamente" });
-  } catch (error) {
-    res.status(500).json({ message: "Error al actualizar el usuario" });
-  }
-};
-
-const eliminadoLogicoUsuario = async (req, res) => {
-  const id = Number(req.params.id);
-  try {
-    await prisma.Usuarios.update({
-      where: { id_usuario: id },
-      data: { activo: 0 }
-    });
-    res.status(200).json({ message: "Usuario desactivado exitosamente" });
-  } catch (error) {
-    res.status(500).json({ message: "Error al desactivar el usuario" });
-  }
-};
-
-const activarUsuario = async (req, res) => {
-  const id = Number(req.params.id);
-  try {
-    const upd = await prisma.Usuarios.update({
-      where: { id_usuario: id },
-      data: { activo: 1 }
-    });
-    res.status(200).json({ message: "Usuario activado exitosamente" });
-  } catch (error) {
-    res.status(500).json({ message: "Error al activar el usuario" });
-  }
-};
 
 
 module.exports = {mostrarTodosUsuarios,mostrarUsuariosInactivos, mostrarUsuarioPorId,crearUsuario,actualizarUsuario,eliminarUsuario,eliminadoLogicoUsuario,activarUsuario}
