@@ -1,169 +1,120 @@
-Trabajo Práctico Semana 2 — Tecnicatura Universitaria en Programación — Segundo Año — Comisión 2
+# 🚀 TP – Semana 3 | Actualización del Back-End a Prisma ORM
 
-Profesor: Chocobar Matías
+---
 
-🧾 Contexto del TP
+## 🎯 Objetivo de la semana
+Migrar el **back-end existente (Node + Express + MySQL)** al uso del ORM **Prisma**, reemplazando las consultas SQL manuales por un enfoque moderno, seguro y escalable basado en modelos de datos.
 
-En la entrega anterior cada grupo recibió un TP asignado aleatoriamente y comenzaron su desarrollo.
-Para esta semana 2, los proyectos fueron intercambiados aleatoriamente entre los 17 grupos
-de manera que cada grupo trabajará ahora sobre un proyecto iniciado por otro grupo.
+---
 
-Esto busca que aprendan a:
+## 👥 Importante para el líder del grupo
 
-trabajar sobre código que no escribieron ustedes
+Antes de comenzar, el **líder del grupo** debe **sincronizar el repositorio** para obtener los nuevos archivos base:
 
-comprender arquitectura ajena
-
-mantener coherencia sobre código heredado
-
-🎯 Objetivo del TP — Semana 2
-
-Sobre el proyecto que ahora se encuentra dentro de tu carpeta de grupo, deberán:
-
-Adaptar la arquitectura al nuevo esquema 
-
-Implementar:
-
-Autenticación con JWT
-
-Hash de contraseña (bcrypt)
-
-Nodemailer
-
-Reset / Recovery de contraseña vía mail
-
-Respetar estructura modular y buenas prácticas
-
-IMPORTANTE:
-Las carpetas de TP_Grupales NO están vacías. Cada carpeta contiene un proyecto ya iniciado.
-Deben trabajar sobre el proyecto que ahora les corresponde, NO sobre el que hicieron antes.
-
-👥 Roles y flujo de trabajo del grupo
-ROL DEL LÍDER
-
-Entra a su carpeta de grupo dentro de TP_Grupales/Grupo_X
-
-Actualiza allí todo el código a la nueva arquitectura
-
-Integra aportes del equipo
-
-Realiza PULL REQUEST al repositorio central del profesor
-
-ROL DE LOS INTEGRANTES
-
-Actualizan su fork desde el repo central (upstream)
-
-Crean rama individual con formato:
-Nombre-Apellido-Legajo
-
-Suben cambios y hacen PR al repositorio del LÍDER
-
-🔧 Instrucciones técnicas de Git (obligatorio)
-# 1) Configurar upstream al repo del profesor (solo primera vez)
-git remote add upstream https://github.com/ChocobarMatias/TP_Comison_2_TUP.git
-
-# 2) Actualizar fork antes de trabajar
+```bash
 git pull upstream main
 
-# 3) Crear rama personal
-git checkout -b Nombre-Apellido-Legajo
+🧠 ¿Qué es Prisma ORM?
 
-# 4) Subir cambios
-git add .
-git commit -m "Implementación JWT / hash / mail / estructura"
-git push origin Nombre-Apellido-Legajo
+Prisma ORM (Object Relational Mapper) permite interactuar con bases de datos utilizando código JavaScript en lugar de SQL manual.
+Traduce los modelos de la base a objetos de Node.js, generando código más limpio, mantenible y escalable.
 
-# 5) Integrantes → PR al Líder
-# 6) Líder → PR al repo del Profesor
+Ventajas:
 
-📅 Fecha límite
+Código más corto y legible
 
-Viernes 24/10/2025 — 23:59 hs
-No hay prórrogas. No se aceptan entregas fuera de término.
+Menos errores de sintaxis SQL
 
-✅ Criterios de aprobación
+Tipado automático
 
-Si el grupo no entrega → TP grupal desaprobado
+Soporte multiplataforma (MySQL, PostgreSQL, SQLite, SQL Server)
 
-Si un integrante no participa con commits y PR → ese integrante queda desaprobado, aunque el grupo apruebe
+⚙️ Pasos para la migración a Prisma
+1️⃣ Instalación de Prisma
 
-Todo debe integrarse antes del deadline
+npm install prisma @prisma/client
 
-Deben respetar la nueva arquitectura
+Instala Prisma y su cliente para que pueda ser utilizado por el servidor Node.js.
 
-🎥 Material de apoyo
+2️⃣ Inicialización de Prisma
 
-En el Google Drive se encuentran subidos los videos con los nuevos temas
-(JWT, hash, nodemailer, reset password, arquitectura)
+npx prisma init
+
+Crea la carpeta /prisma con el archivo schema.prisma y agrega la variable DATABASE_URL al .env.
+
+3️⃣ Configuración del archivo .env
+
+Editá tu archivo .env agregando la cadena de conexión correspondiente a tu base MySQL:
+
+DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE"
+
+Reemplazá USER, PASSWORD, HOST, PORT y DATABASE con tus datos reales.
+
+4️⃣ Conectar Prisma a la base existente
+
+npx prisma db pull   (Prisma lee la estructura de tu base de datos y genera automáticamente los modelos dentro de schema.prisma.)
+
+Genera el archivo schema.prisma basado en la estructura actual de la base de datos. (recordar que si no le esta funcionado verifiquen que el archivo prisma.config.ts este importado el dotenv/config)
+
+5️⃣ Generar el cliente de Prisma
+
+npx prisma generate
+
+Crea el cliente Prisma dentro de node_modules/@prisma/client, permitiendo realizar consultas con sintaxis moderna:
+
+const usuarios = await prisma.usuarios.findMany();
+
+6️⃣ (✅ Opcional) Crear archivo de configuración de Prisma
+
+Para centralizar la conexión, podés crear un archivo:
+
+📁 /config/prisma.js
+
+const { PrismaClient } = require('@prisma/client');  (recuerden que aqui tiene que apuntar a la carpeta generada)
+const prisma = new PrismaClient();
+
+module.exports = prisma;
+
+🧾 Auditoría del trabajo
+
+Cada grupo deberá incluir un archivo AUDITORIA.md dentro de su carpeta con:
+
+Breve descripción de los cambios realizados.
+
+Capturas del resultado de los comandos:
+
+npx prisma db pull
+
+npx prisma generate
+
+Ejemplo funcional de un controlador usando Prisma (findMany, create, update, etc).
+
+🧑‍💻 Resumen de comandos
+Propósito	Comando	Descripción
+💾 Instalar ORM	npm install prisma @prisma/client	Añade Prisma al proyecto
+⚙️ Inicializar	npx prisma init	Crea la configuración base
+🧩 Leer DB existente	npx prisma db pull	Importa la estructura de la base
+🏗️ Generar cliente	npx prisma generate	Compila el cliente Prisma
+🧹 Formatear schema	npx prisma format	Ordena el archivo schema.prisma
+👀 Visualizar datos	npx prisma studio	Abre interfaz gráfica para explorar tablas
+🎯 Resultado esperado
+
+Al finalizar la Semana 3:
+
+El back-end debe utilizar Prisma ORM en lugar de consultas SQL con mysql2.
+
+Los controladores principales (usuarios, clientes, ventas, productos, etc.) deben usar los métodos Prisma (findMany, findUnique, create, update, delete).
+
+El proyecto debe correr correctamente con:
+
+npm run dev  o nodemon
 
 
-# checklist-de-entrega
+sin errores de conexión a base de datos.
 
-✔️ Checklist de entrega
+💡 Consejo :
+Recordá que Prisma no usa variables sueltas como DB_HOST o DB_USER.
+Usa una sola cadena de conexión DATABASE_URL, lo que simplifica la configuración y evita errores comunes.
 
- Proyecto reestructurado a nueva arquitectura
-
- JWT implementado correctamente
-
- Hash de contraseña funcionando
-
- Nodemailer configurado
-
- Reset password implementado
-
- PR de integrantes al Líder realizado
-
- PR del Líder al Repo Central enviado
-
- Todos los integrantes participaron con merge / commits propios
-
-
- imagen de estructura de proyecto
-
- ![Estructura de Proyecto](./arquitectura%20de%20carpetas.jpg)
-
-# Estructura de Proyecto Sugerida
-
-
-├── src/
-│   ├── config/
-│   │   └── db.js
-│   │
-│   ├── controllers/
-│   │   
-│   │
-│   ├── middlewares/
-│   │   └── auth.middleware.js
-│   │
-│   ├── models/
-│   │ 
-│   │
-│   ├── routes/
-│   │   ├── index.js
-│   │   
-│   │
-│   ├── services/
-│   │   └── email.service.js
-│   │
-│   ├── utils/
-│   │   └── hash.utils.js
-│   │
-│   ├── validators/
-│   │   └── auth.validator.js
-│   │
-│   └── app.js
-│
-├── node_modules/
-│
-├── .env
-├── .env.example
-│
-├── package-lock.json
-├── package.json
-│
-├── .gitignore   // configuarar para ignorar node_modules y .env
-│
-│
-├── index.js
-│
-└── README.md
+📚 UTN – Programación 4 | Comisión 2
+Profesor: Matías Chocobar
