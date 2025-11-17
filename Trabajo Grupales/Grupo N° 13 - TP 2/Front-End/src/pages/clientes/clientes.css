@@ -1,0 +1,62 @@
+/* Fondo negro general y texto blanco */
+.cliente-container {
+  background-color: #121212;
+  min-height: 100vh;
+  padding-top: 100px; 
+  color: white;
+}
+
+/* Tarjetas oscuras */
+.card {
+  background-color: #1e1e1e;
+  color: white;
+  border: 1px solid #333;
+}
+
+/* Inputs oscuros */
+.form-control {
+  background-color: #2b2b2b;
+  border: 1px solid #444;
+  color: white;
+}
+
+.form-control::placeholder {
+  color: #aaa;
+}
+
+/* Tabla */
+.table {
+  color: white;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #1a1a1a;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #242424;
+}
+
+.table th {
+  color: #000000;
+  border-bottom: 1px solid #444;
+}
+
+.table td {
+  border-color: #333;
+}
+
+/* Modal oscuro */
+.modal-content {
+  background-color: #1f1f1f;
+  color: white;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: #333;
+}
+
+.btn-close {
+  filter: invert(1);
+}
