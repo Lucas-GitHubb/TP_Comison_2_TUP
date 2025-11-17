@@ -6,4 +6,5 @@ router.post('/', postCliente);
 router.get('/', getClientes);
 router.get('/:id', getCliente);
 router.put('/:id', putCliente);
+
 export default router;

@@ -1,115 +1,205 @@
-import { pool } from '../config/DB.js';
+import prisma from '../../prisma/client.js';
+import { validarDisponibilidad } from '../helpers/turnos/validarDisponibilidad.js';
+import { combinarFechaYHora } from '../utils/time.js';
 
-export async function haySolape({ fecha, hora, duracion_min }) {
-  const [rows] = await pool.execute(
-    `SELECT t.id,
-            t.hora,
-            ADDTIME(t.hora, SEC_TO_TIME(s.duracion_min*60)) AS hora_fin
-     FROM turnos t
-     JOIN servicios s ON s.id = t.servicio_id
-     WHERE t.fecha = :fecha AND t.estado <> 'cancelado'`,
-    { fecha }
-  );
+// ===============================
+// Crear turno
+// ===============================
+export async function crearTurno({ cliente_id, servicio_id, fecha, hora, observaciones }) {
 
-  const [h, m, s = 0] = hora.split(':').map(Number);
-  const nuevoInicio = h*3600 + m*60 + s;
-  const nuevoFin = nuevoInicio + duracion_min*60;
+  const fechaDate = new Date(fecha);
+  if (isNaN(fechaDate)) {
+    const e = new Error('Fecha inválida');
+    e.status = 400;
+    throw e;
+  }
 
-  return rows.some(({ hora: eHora, hora_fin }) => {
-    const [eh, em, es = 0] = String(eHora).split(':').map(Number);
-    const eInicio = eh*3600 + em*60 + es;
-    const [fh, fm, fs = 0] = String(hora_fin).split(':').map(Number);
-    const eFin = fh*3600 + fm*60 + fs;
-    return (eInicio < nuevoFin) && (nuevoInicio < eFin);
+  // Combinar fecha + hora
+  const horaDate = combinarFechaYHora(fecha, hora);
+
+  // Obtener servicio
+  const servicio = await prisma.servicios.findUnique({
+    where: { id: servicio_id }
+  });
+
+  if (!servicio) {
+    const e = new Error('Servicio inválido');
+    e.status = 400;
+    throw e;
+  }
+
+  const duracionMin = servicio.duracion_min;
+
+  // Obtener turnos del día
+  const turnosDelDia = await prisma.turnos.findMany({
+    where: {
+      fecha: fechaDate,
+      estado: { not: 'cancelado' }
+    },
+    include: { servicios: true }
+  });
+
+  // Validar disponibilidad
+  const conflicto = validarDisponibilidad(turnosDelDia, hora, duracionMin);
+  if (conflicto) {
+    const e = new Error('Ya existe un turno en ese horario');
+    e.status = 409;
+    throw e;
+  }
+
+  // Crear turno
+  return prisma.turnos.create({
+    data: {
+      cliente_id,
+      servicio_id,
+      fecha: fechaDate,
+      hora: horaDate,          // ← AHORA SÍ: Date
+      observaciones
+    },
+    include: {
+      clientes: true,
+      servicios: true
+    }
   });
 }
 
-export async function crearTurno({ cliente_id, servicio_id, fecha, hora, observaciones }) {
-  const [[{ duracion_min }]] = await pool.query(
-    `SELECT duracion_min FROM servicios WHERE id = ?`, [servicio_id]
-  );
-  if (!duracion_min) throw new Error('Servicio inválido');
+// ===============================
+// Obtener turno por ID
+// ===============================
+export async function obtenerTurno(id) {
+  return prisma.turnos.findUnique({
+    where: { id: Number(id) },
+    include: {
+      clientes: true,
+      servicios: true
+    }
+  });
+}
 
-  const solapa = await haySolape({ fecha, hora, duracion_min });
-  if (solapa) {
-    const err = new Error('Turno solapado en ese horario');
-    err.status = 409;
-    throw err;
+// ===============================
+// Listar turnos por fecha
+// ===============================
+export async function listarTurnosPorFecha(fecha) {
+
+  const fechaDate = new Date(fecha);
+  if (isNaN(fechaDate)) {
+    const e = new Error('Fecha inválida');
+    e.status = 400;
+    throw e;
   }
 
-  const [r] = await pool.execute(
-    `INSERT INTO turnos (cliente_id, servicio_id, fecha, hora, observaciones) 
-     VALUES (:cliente_id, :servicio_id, :fecha, :hora, :observaciones)`,
-    { cliente_id, servicio_id, fecha, hora, observaciones }
-  );
-  return obtenerTurno(r.insertId);
+  return prisma.turnos.findMany({
+    where: {
+      fecha: fechaDate,
+      estado: { not: 'cancelado' }
+    },
+    include: {
+      clientes: true,
+      servicios: true
+    },
+    orderBy: { hora: 'asc' }
+  });
 }
 
-export async function obtenerTurno(id) {
-  const [rows] = await pool.execute(
-    `SELECT t.*, c.nombre AS cliente_nombre, s.nombre AS servicio_nombre, s.duracion_min
-       FROM turnos t
-       JOIN clientes c ON c.id = t.cliente_id
-       JOIN servicios s ON s.id = t.servicio_id
-      WHERE t.id = :id`,
-    { id }
-  );
-  return rows[0] || null;
-}
-
-export async function listarTurnosPorFecha(fecha) {
-  const [rows] = await pool.execute(
-    `SELECT t.*, c.nombre AS cliente_nombre, s.nombre AS servicio_nombre
-       FROM turnos t
-       JOIN clientes c ON c.id = t.cliente_id
-       JOIN servicios s ON s.id = t.servicio_id
-      WHERE t.fecha = :fecha AND t.estado <> 'cancelado'
-      ORDER BY t.hora ASC`,
-    { fecha }
-  );
-  return rows;
-}
-
+// ===============================
+// Cambiar estado
+// ===============================
 export async function cambiarEstado(id, estado) {
-  await pool.execute(`UPDATE turnos SET estado = :estado WHERE id = :id`, { id, estado });
-  return obtenerTurno(id);
+  return prisma.turnos.update({
+    where: { id: Number(id) },
+    data: { estado },
+    include: {
+      clientes: true,
+      servicios: true
+    }
+  });
 }
 
+// ===============================
+// Reprogramar turno
+// ===============================
 export async function reprogramarTurno(id, { fecha, hora, servicio_id, observaciones }) {
+
   const turnoActual = await obtenerTurno(id);
   if (!turnoActual) {
-    const e = new Error('Turno no encontrado'); e.status = 404; throw e;
+    const e = new Error('Turno no encontrado');
+    e.status = 404;
+    throw e;
   }
 
-  const nuevo = {
-    fecha: fecha ?? turnoActual.fecha,
-    hora: hora ?? turnoActual.hora,
-    servicio_id: servicio_id ?? turnoActual.servicio_id
-  };
+  const nuevaFecha = fecha ? new Date(fecha) : turnoActual.fecha;
+  if (isNaN(nuevaFecha)) {
+    const e = new Error('Fecha inválida');
+    e.status = 400;
+    throw e;
+  }
 
-  const [[{ duracion_min }]] = await pool.query(
-    `SELECT duracion_min FROM servicios WHERE id = ?`, [nuevo.servicio_id]
-  );
-  const solapa = await haySolape({ fecha: nuevo.fecha, hora: nuevo.hora, duracion_min });
-  if (solapa) { const e = new Error('Turno solapado en ese horario'); e.status = 409; throw e; }
+  const nuevaHoraDate = hora
+    ? combinarFechaYHora(nuevaFecha.toISOString().slice(0,10), hora)
+    : turnoActual.hora;
 
-  await pool.execute(
-    `UPDATE turnos 
-        SET fecha = :fecha, hora = :hora, servicio_id = :servicio_id, observaciones = :observaciones
-      WHERE id = :id`,
-    { id, ...nuevo, observaciones: observaciones ?? turnoActual.observaciones }
+  const nuevoServicio = servicio_id ?? turnoActual.servicio_id;
+
+  // Datos del servicio
+  const servicio = await prisma.servicios.findUnique({
+    where: { id: nuevoServicio }
+  });
+
+  if (!servicio) {
+    const e = new Error('Servicio inválido');
+    e.status = 400;
+    throw e;
+  }
+
+  // Turnos del día exceptuando este
+  const turnosDelDia = await prisma.turnos.findMany({
+    where: {
+      fecha: nuevaFecha,
+      estado: { not: 'cancelado' },
+      id: { not: id }
+    },
+    include: { servicios: true }
+  });
+
+  // Validar disponibilidad
+  const conflicto = validarDisponibilidad(
+    turnosDelDia,
+    hora ?? turnoActual.hora.toISOString().slice(11,16),
+    servicio.duracion_min
   );
-  return obtenerTurno(id);
+
+  if (conflicto) {
+    const e = new Error('Ya existe un turno en ese horario');
+    e.status = 409;
+    throw e;
+  }
+
+  // Actualizar
+  return prisma.turnos.update({
+    where: { id: Number(id) },
+    data: {
+      fecha: nuevaFecha,
+      hora: nuevaHoraDate,     // ← Date válido
+      servicio_id: nuevoServicio,
+      observaciones: observaciones ?? turnoActual.observaciones
+    },
+    include: {
+      clientes: true,
+      servicios: true
+    }
+  });
 }
 
+// ===============================
+// Historial por cliente
+// ===============================
 export async function historialPorCliente(cliente_id) {
-  const [rows] = await pool.execute(
-    `SELECT t.*, s.nombre AS servicio_nombre
-       FROM turnos t
-       JOIN servicios s ON s.id = t.servicio_id
-      WHERE t.cliente_id = :cliente_id
-      ORDER BY t.fecha DESC, t.hora DESC`,
-    { cliente_id }
-  );
-  return rows;
+  return prisma.turnos.findMany({
+    where: { cliente_id },
+    include: { servicios: true },
+    orderBy: [
+      { fecha: 'desc' },
+      { hora: 'desc' }
+    ]
+  });
 }

@@ -10,6 +10,16 @@
 
 ## 1) RELEVAMIENTO — Antes de comenzar a trabajar
 
+ Datos mal logrados que encontramos:
+ - A simple vista en el proyecto se puede ver que habían creado 2 archivos que no se utilizaban y 
+confundían para levantar el servidor, el archivo app.js y server.js 
+
+- Otro error que encontramos es que estaban mal importadas las rutas, porque el archivo index.js
+no estaba teniendo en cuenta de que estos archivos estaban dentro de la carpeta src/ entonces
+la importación de las rutas se estaban haciendo mal.
+
+
+
 Describir brevemente lo encontrado al abrir el proyecto:
 
 - Errores detectados (bugs, warnings, import fallidos, rutas rotas, etc.)
