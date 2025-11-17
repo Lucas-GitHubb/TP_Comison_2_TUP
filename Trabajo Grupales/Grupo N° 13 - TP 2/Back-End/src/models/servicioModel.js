@@ -24,3 +24,9 @@ export async function actualizarServicio(id, data) {
     data
   });
 }
+
+export async function eliminarServicioModel(id) {
+  return prisma.servicios.delete({
+    where: { id: Number(id) }
+  });
+}

@@ -24,3 +24,9 @@ export async function actualizarCliente(id, data) {
     data
   });
 }
+
+export async function eliminarClienteModel(id) {
+  return prisma.clientes.delete({
+    where: { id: Number(id) }
+  });
+}
